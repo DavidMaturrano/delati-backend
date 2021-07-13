@@ -26,7 +26,7 @@ public class Connection {
                                 "where o.id_estado is null order by 1,2;");*/
             delati.setQuery(query);
             delati.setSource(delati.getUrl(), delati.getUser(), delati.getPassword());
-            System.out.print(delati);
+            
             return delati;
         } catch (Exception ex) {
             Logger.getLogger(Connection.class.getName()).log(Level.SEVERE, null, ex);
