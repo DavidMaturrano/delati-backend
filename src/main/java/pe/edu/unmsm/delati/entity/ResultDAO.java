@@ -39,9 +39,6 @@ public class ResultDAO {
             }else{*/
             //db_delati = con.getConnection(Query);
             //}
-            System.out.println(Query);
-            System.out.println(db_delati.getDataSet());
-            System.out.println("Aqui2");
             
             data = db_delati.getDataSet();
     }
@@ -111,7 +108,7 @@ public class ResultDAO {
             
         }catch(Exception e){
             System.out.println("Fallo el metodo 'getResult': "+ e);
-            return "Fallo el metodo, vuelva a intentar...";
+            return "Fallo el metodo, vuelva a intentar 1...";
         }
     }
     
@@ -131,7 +128,7 @@ public class ResultDAO {
             
         }catch(Exception e){
             System.out.println("Fallo el metodo 'getCanopy': "+ e);
-            return "Fallo el metodo, vuelva a intentar...";
+            return "Fallo el metodo, vuelva a intentar 2...";
         }
     }
     
@@ -151,7 +148,7 @@ public class ResultDAO {
             
         }catch(Exception e){
             System.out.println("Fallo el metodo 'getEM': "+ e);
-            return "Fallo el metodo, vuelva a intentar...";
+            return "Fallo el metodo, vuelva a intentar 3...";
         }
     }
 
