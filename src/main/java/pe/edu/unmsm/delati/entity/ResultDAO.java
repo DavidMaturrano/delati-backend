@@ -41,9 +41,6 @@ public class ResultDAO {
             //}
             System.out.println("PUNTO 1");
             data = db_delati.getDataSet();
-            System.out.println("PUNTO 2");
-            data = new Instances(db_delati.getDataSet());
-            System.out.println("PUNTO 3");
     }
     
 
