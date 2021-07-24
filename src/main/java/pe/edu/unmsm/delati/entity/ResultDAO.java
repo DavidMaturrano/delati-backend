@@ -65,8 +65,6 @@ public class ResultDAO {
         }else{
             distance = new EuclideanDistance(data);
         }
-        //EuclideanDistance distance = new EuclideanDistance();
-        //ManhattanDistance distanceM = new ManhattanDistance(data);
         
         try{
             model.setNumClusters(5);
@@ -128,7 +126,6 @@ public class ResultDAO {
     }
     
     public String getCobweb(JSONQuery request){
-        //EM model = new EM();
         Cobweb model = new Cobweb();
         
         try{
