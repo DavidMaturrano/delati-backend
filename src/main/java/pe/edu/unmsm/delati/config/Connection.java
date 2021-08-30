@@ -20,10 +20,6 @@ public class Connection {
             delati.setUrl(url);
             delati.setUser(user);
             delati.setPassword(pwd);
-                /*delati.setQuery("select distinct o.htitulo_cat, o.htitulo \n" +
-                                "from webscraping w inner join oferta o on \n" +
-                                "(w.id_webscraping=o.id_webscraping) \n" +
-                                "where o.id_estado is null order by 1,2;");*/
             delati.setQuery(query);
             delati.setSource(delati.getUrl(), delati.getUser(), delati.getPassword());
             

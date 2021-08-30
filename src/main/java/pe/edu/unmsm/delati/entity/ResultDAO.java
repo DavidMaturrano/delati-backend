@@ -1,29 +1,22 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package pe.edu.unmsm.delati.entity;
 
+import java.awt.BorderLayout;
 import java.io.IOException;
+import java.util.ArrayList;
 import pe.edu.unmsm.delati.config.Connection;
-import weka.clusterers.Canopy;
+import weka.classifiers.trees.J48;
 import weka.clusterers.ClusterEvaluation;
-import weka.clusterers.EM;
-import weka.clusterers.SimpleKMeans;
-import weka.core.DistanceFunction;
-import weka.core.EuclideanDistance;
 import weka.core.Instances;
-import weka.core.ManhattanDistance;
 import weka.core.converters.DatabaseLoader;
 import weka.clusterers.Cobweb;
+import weka.gui.treevisualizer.PlaceNode2;
+import weka.gui.treevisualizer.TreeVisualizer;
 
-/**
- *
- * @author Lenovo Legion Y520
- */
+import weka.classifiers.*;
+
 public class ResultDAO {
     Instances data;
+    
     public ResultDAO(String Query) throws IOException{
         Connection con = new Connection();
         DatabaseLoader db_delati = con.getConnection(Query);
@@ -37,113 +30,53 @@ public class ResultDAO {
             db_delati = con.getConnection(Query);
         }
         
-        data = db_delati.getDataSet();
+        data = new Instances(db_delati.getDataSet());
+        
     }
     
 
-    public String getResult(JSONQuery request){
-        if(request == null){
-            return "Petición Fallida";
-        }else if(request.getType().equals("kmeans")){
-            return getKMeans(request);
-        }else if(request.getType().equals("em")){
-            return getEM(request);
-        }else if(request.getType().equals("canopy")){
-            return getCanopy(request);
-        }else{
-            return getCobweb(request);
-        }
+    public ArrayList<Node> getResult(JSONQuery request){
+       if(request == null){
+            return null;
+       }else{
+           return getCobweb(request);
+       }
     }
     
-    
-    public String getKMeans(JSONQuery request){
-        SimpleKMeans model = new SimpleKMeans();
-        
-        Object distance = new Object();
-        if(request.getDistance().equals("manhattan")){
-            distance = new ManhattanDistance(data);
-        }else{
-            distance = new EuclideanDistance(data);
-        }
-        
-        try{
-            model.setNumClusters(5);
-            model.buildClusterer(data);
-            model.setDistanceFunction((DistanceFunction) distance);
-            
-            ClusterEvaluation clsEval = new ClusterEvaluation();
-            clsEval.setClusterer(model);
-            clsEval.evaluateClusterer(data);
-            
-            String result = clsEval.clusterResultsToString();//clsEval.clusterResultsToString();//.replaceAll("\n", "<br>").replaceAll(" ", "&nbsp;");
-            
-            return result;
-            
-        }catch(Exception e){
-            System.out.println("Fallo el metodo 'getResult': "+ e);
-            return "Fallo el metodo, vuelva a intentar 1...";
-        }
-    }
-    
-    public String getCanopy(JSONQuery request){
-        Canopy model = new Canopy();
-        
-        try{
-            model.buildClusterer(data);
-            
-            ClusterEvaluation clsEval = new ClusterEvaluation();
-            clsEval.setClusterer(model);
-            clsEval.evaluateClusterer(data);
-            
-            String result = clsEval.clusterResultsToString();//clsEval.clusterResultsToString();//.replaceAll("\n", "<br>").replaceAll(" ", "&nbsp;");
-            
-            return result;
-            
-        }catch(Exception e){
-            System.out.println("Fallo el metodo 'getCanopy': "+ e);
-            return "Fallo el metodo, vuelva a intentar 2...";
-        }
-    }
-    
-    public String getEM(JSONQuery request){
-        EM model = new EM();
-        
-        try{
-            model.buildClusterer(data);
-            
-            ClusterEvaluation clsEval = new ClusterEvaluation();
-            clsEval.setClusterer(model);
-            clsEval.evaluateClusterer(data);
-            
-            String result = clsEval.clusterResultsToString();//clsEval.clusterResultsToString();//.replaceAll("\n", "<br>").replaceAll(" ", "&nbsp;");
-            
-            return result;
-            
-        }catch(Exception e){
-            System.out.println("Fallo el metodo 'getEM': "+ e);
-            return "Fallo el metodo, vuelva a intentar 3...";
-        }
-    }
-    
-    public String getCobweb(JSONQuery request){
+    public ArrayList<Node> getCobweb(JSONQuery request){
         Cobweb model = new Cobweb();
         
         try{
             model.buildClusterer(data);
+            model.setAcuity(request.getAcuity());
+            model.setCutoff(request.getCutoff());
+            model.setDebug(request.isDebug());
+            model.setDoNotCheckCapabilities(request.isDoNotCheckCapabilities());
+            model.setSaveInstanceData(request.isSaveInstanceData());
+            model.setSeed(request.getSeed());
+            
             
             ClusterEvaluation clsEval = new ClusterEvaluation();
             clsEval.setClusterer(model);
             clsEval.evaluateClusterer(data);
             
+             
             String result = clsEval.clusterResultsToString();//clsEval.clusterResultsToString();//.replaceAll("\n", "<br>").replaceAll(" ", "&nbsp;");
             
-            return result;
+            String grafico = model.graph();
+            
+            ArbolN dataArbol = new ArbolN();
+            dataArbol.initNodes(model.numberOfClusters());
+            dataArbol.Separador(grafico, result);
+           
+            return dataArbol.getListNodes();
             
         }catch(Exception e){
-            System.out.println("Fallo el metodo 'getEM': "+ e);
-            return "Fallo el metodo, vuelva a intentar 3...";
+            System.out.println("Fallo el metodo 'getCobweb': "+ e);
+            return null;
         }
     }
+    
 
     private void ClustererPanel() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
